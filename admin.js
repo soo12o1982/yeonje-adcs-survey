@@ -44,7 +44,7 @@ function renderStatus(d){
   const genders=d.quotas.genders,ages=d.quotas.ages;
   const allAge=ages.reduce((a,x)=>a+Number(x.limit||0),0);
   const allGender=genders.reduce((a,x)=>a+Number(x.limit||0),0);
-  const maxTotal=Math.min(allAge,allGender);
+  const maxTotal=Number(d.quotas.total?.limit)||Math.min(allAge,allGender);
   return `<div class="admin-metrics"><div class="admin-metric"><small>전체 유효 응답</small><strong>${d.total.toLocaleString()}명</strong><small>최대 ${maxTotal.toLocaleString()}명 / 잔여 ${Math.max(0,maxTotal-d.total)}명</small></div>
   <div class="admin-metric"><small>조사 운영 상태</small><strong>${d.quotas.open?'진행 중':'마감'}</strong><small>최종 제출 완료 기준</small></div>
   <div class="admin-metric"><small>이벤트 참여 동의</small><strong>${d.events.toLocaleString()}명</strong><small>중복 번호는 추첨에서 제외</small></div>
@@ -52,7 +52,7 @@ function renderStatus(d){
   <div class="admin-controls"><button type="button" class="btn secondary" id="refresh">지금 새로고침</button><span class="admin-status" id="updated" aria-live="polite">20초 간격으로 자동 갱신</span></div>
   <h2>성별 참여 인원</h2><div class="quota-group">${genders.map((item,i)=>quotaRow(questions[1].options[i],item)).join('')}</div>
   <h2>연령별 참여 인원</h2><div class="quota-group">${ages.map((item,i)=>quotaRow(questions[2].options[i],item)).join('')}</div>
-  <p class="admin-hint">연령별 상한 총합은 ${allAge}명, 성별 상한 총합은 ${allGender}명입니다. 실제 전체 접수 가능 인원은 두 할당 조건을 모두 충족해야 하므로 응답 분포에 따라 ${maxTotal}명보다 일찍 종료될 수 있습니다.</p>`;
+  <p class="admin-hint">연령별 상한 총합은 ${allAge}명, 성별 상한 총합은 ${allGender}명입니다. 전체 정원 ${maxTotal}명과 성별·연령별 정원을 동시에 적용합니다. 집단별 응답 편중에 따라 전체 정원에 도달하기 전에 참여 가능한 선택지가 마감될 수 있습니다.</p>`;
 }
 function renderDownloads(){return `<h2>통계·응답 자료 다운로드</h2><p class="admin-hint">기본 Excel 파일은 개인정보를 제외한 유효 완료 응답 자료입니다. LABEL 시트는 DATA와 동일한 행과 열 구조의 문자형 응답값입니다.</p>
 <div class="admin-controls"><button type="button" class="btn" id="export">Excel 다운로드 (DATA · LABEL · CODE)</button><button type="button" class="btn secondary" id="eventExport">이벤트 연락처 CSV</button></div>
